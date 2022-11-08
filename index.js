@@ -22,7 +22,7 @@ async function run() {
             const projects = await cursor.toArray();
             res.send(projects);
         })
-        app.post('/contact', async (req, res) => {
+        app.post('/contactPosting', async (req, res) => {
             const newContact = req.body;
             const result = await contactCollection.insertOne(newContact);
             console.log(reviewCollection);
