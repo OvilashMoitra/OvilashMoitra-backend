@@ -1,5 +1,5 @@
 const express = require('express');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000;
 const cors = require('cors');
@@ -29,8 +29,30 @@ async function run() {
             res.send(result);
         })
         app.get('/contact', async (req, res) => {
-            const newContact = req.body;
-            const result = await contactCollection.insertOne(newContact);
+            const query = {}
+            const cursor = contactCollection.find(query);
+            const contact = await cursor.toArray();
+            res.send(contact);
+        })
+        app.put("/contactMark", async (req, res) => {
+            const id = req.query.id;
+            console.log(id)
+            console.log(req.body);
+            const filter = { _id: ObjectId(id) };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: {
+                    isMark: req.body.isMark
+                },
+            };
+            const result = await contactCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        })
+
+        app.delete("/deleteContact", async (req, res) => {
+            const id = req.query.id
+            const query = { _id: ObjectId(id) };
+            const result = await contactCollection.deleteOne(query);
             console.log(result);
             res.send(result);
         })
